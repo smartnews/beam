@@ -129,6 +129,8 @@ public class DockerEnvironmentFactory implements EnvironmentFactory {
             .addAll(gcsCredentialArgs())
             // NOTE: Host networking does not work on Mac, but the command line flag is accepted.
             .add("--network=host")
+	    // TODO: remove this hardcoded volume and add an pipeline option for docker volume mounts
+	    .add("-v=/ml-infra:/ml-infra")
             // We need to pass on the information about Docker-on-Mac environment (due to missing
             // host networking on Mac)
             .add("--env=DOCKER_MAC_CONTAINER=" + System.getenv("DOCKER_MAC_CONTAINER"));
@@ -160,12 +162,13 @@ public class DockerEnvironmentFactory implements EnvironmentFactory {
       LOG.debug("Created Docker Container with Container ID {}", containerId);
       // Wait on a client from the gRPC server.
       try {
-        instructionHandler = clientSource.take(workerId, Duration.ofMinutes(1));
+        // Python docker container takes longer time to start due to installation of python dependencies.
+        instructionHandler = clientSource.take(workerId, Duration.ofMinutes(10));
       } catch (TimeoutException timeoutEx) {
         RuntimeException runtimeException =
             new RuntimeException(
                 String.format(
-                    "Docker container %s failed to start up successfully within 1 minute.",
+                    "Docker container %s failed to start up successfully within 10 minute.",
                     containerImage),
                 timeoutEx);
         try {
