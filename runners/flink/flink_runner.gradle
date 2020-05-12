@@ -130,7 +130,6 @@ configurations {
   validatesRunner
   miniCluster
 }
-
 dependencies {
   compileOnly project(":sdks:java:build-tools")
   compile library.java.vendored_guava_26_0_jre
@@ -139,6 +138,7 @@ dependencies {
   compile project(":runners:core-construction-java")
   compile project(":runners:java-fn-execution")
   compile project(":sdks:java:extensions:google-cloud-platform-core")
+  compile project(":sdks:java:io:amazon-web-services")
   compile library.java.vendored_grpc_1_26_0
   compile library.java.jackson_annotations
   compile library.java.slf4j_api
